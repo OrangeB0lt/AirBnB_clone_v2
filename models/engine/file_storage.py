@@ -73,3 +73,8 @@ class FileStorage:
             if key in self.__objects.keys():
                 del self.__objects[key]
         FileStorage.save(self)
+
+    def close(self):
+        """serialize the file path to JSON file path
+        """
+        self.reload()
