@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 @app.teardown_appcontext
-def removeSession(response_or_exc):
+def removeSession(exception):
     '''Removes the current SQLAlchemy Session'''
     storage.close()
 
@@ -15,6 +15,7 @@ def removeSession(response_or_exc):
 @app.route('/states_list', strict_slashes=False)
 def allStates():
     '''Shows all State instances'''
+    storage.reload()
     data = storage.all('State')
     states = []
     for key, value in data.items():
