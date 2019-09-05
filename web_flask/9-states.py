@@ -5,26 +5,44 @@ from models import storage
 app = Flask(__name__)
 
 
+def get_state_list():
+    '''gets dict of states from storage'''
+    storage.reload()
+    return [[v.id, v.name] for v in storage.all("State").values()]
+
+
+@app.route('/states', strict_slashes=False)
+def statesList():
+    '''list all the states'''
+    states = get_state_list()
+    return render_template('9-states.html', states=states, cities=None)
+
+
+@app.route('/states/<id>', strict_slashes=False)
+def cityById(id=None):
+    '''list cities and states by id'''
+    states = get_state_list()
+    state = None
+    for x in states:
+        if x[0] == id:
+            state = x[1]
+    if state is None:
+        return render_template('9-states.html', states=None)
+    citiesdict = storage.all("City")
+    cities = []
+    for _, v in citiesdict.items():
+        if v.state_id == id:
+            cities.append([v.id, v.name])
+    return render_template('9-states.html',
+                           states=state,
+                           cities=cities)
+
+
 @app.teardown_appcontext
-def removeSession(response_or_exc):
-    ''' Removes the current SQLAlchemy Session '''
+def close(exception):
+    '''tear down the database'''
     storage.close()
 
 
-@app.route('/states/', strict_slashes=False)
-@app.route('/states/<state_id>', strict_slashes=False)
-def showStateCities(state_id=None):
-    ''' Shows State and its Cities, or all States if no id is passed in '''
-    data = storage.all('State')
-    states = []
-    target = None
-    for key, value in data.items():
-        states.append(value)
-        if state_id == value.id:
-            target = value
-
-    return render_template('9-states.html', states=states,
-                           target=target, state_id=state_id)
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run()
