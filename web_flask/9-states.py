@@ -5,7 +5,7 @@ from models import storage
 app = Flask(__name__)
 
 
-def get_state_list():
+def getStateList():
     '''gets dict of states from storage'''
     storage.reload()
     return [[v.id, v.name] for v in storage.all("State").values()]
@@ -23,9 +23,9 @@ def cityById(id=None):
     '''list cities and states by id'''
     states = get_state_list()
     state = None
-    for x in states:
-        if x[0] == id:
-            state = x[1]
+    for num in states:
+        if num[0] == id:
+            state = num[1]
     if state is None:
         return render_template('9-states.html', states=None)
     citiesdict = storage.all("City")
