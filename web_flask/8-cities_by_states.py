@@ -3,22 +3,27 @@
 from flask import Flask, render_template
 from models import storage
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 
 
 @app.teardown_appcontext
-def removeSession(response_or_exc):
-    ''' Removes current SQLAlchemy Session '''
+def close(self):
+    ''' Closes curr SQLAlchemy session after request '''
     storage.close()
 
 
-@app.route('/cities_by_states', strict_slashes=False)
-def showCitiesBStates():
-    ''' Shows all Cities by State inst '''
-    data = storage.all('State')
-    states = []
-    for key, value in data.items():
-        states.append(value)
-    return render_template('8-cities_by_states.html', states=states)
+@app.route('/states_list')
+def stateLists():
+    ''' Injects states and info into html '''
+    states = storage.all('State')
+    return render_template('7-states_list.html', state=states)
+
+
+@app.route('/cities_by_states')
+def cityLists():
+    ''' Injects the cities into html '''
+    states = storage.all('State')
+    return render_template('8-cities_by_states.html', state=states)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5000)
