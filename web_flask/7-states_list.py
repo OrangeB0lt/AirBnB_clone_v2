@@ -15,12 +15,8 @@ def removeSession(exception):
 @app.route('/states_list', strict_slashes=False)
 def allStates():
     '''Shows all State instances'''
-    storage.reload()
-    data = storage.all('State')
-    states = []
-    for key, value in data.items():
-        states.append(value)
-    return render_template('7-states_list.html', states=states)
+    states = storage.all('State')
+    return render_template('7-states_list.html', state=states)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
